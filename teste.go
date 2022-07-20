@@ -12,7 +12,7 @@ func main() {
 	var wg sync.WaitGroup
 
 	logch := make(chan string)
-	// ch usado por loga p/ indicar que acabou de processar tudo e saiu do loop
+	// ch used by log to signal that it ended processing messages
 	logend := make(chan bool)
 
 	go loga(logch, logend)
@@ -29,10 +29,10 @@ func main() {
 	}
 
 	wg.Wait()
-	// fecha logch para indicar para loga que não há mais mensagens...
+	// closing logch signals loga that there is no more message to process
 	close(logch)
-	// ...mas tem que esperar loga indicar que terminou tudo antes de encerrar o programa.
-	// Se não esperar a confirmação de log a última mensagem pode ser perdida.
+	// ...but we have to wait loga signal that it ended processing messages. It uses logend ch. to signal it.
+	// If the progam ends before confirmation, we can loose the last message.
 	<-logend
 
 }
